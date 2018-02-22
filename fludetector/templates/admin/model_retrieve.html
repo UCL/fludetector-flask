@@ -1,0 +1,81 @@
+{% extends "admin/base.html" %}
+{% set page = 'models retrieve' %}
+{% set title = 'Models - ' + model.name %}
+
+{% block breadcrumbs %}
+    <li><a href="{{ url_for('admin_home') }}">Home</a></li>
+    <li><a href="{{ url_for('admin_list_models') }}">Models</a></li>
+    <li class="active">{{ model.name }}</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row"><div class="col-xs-12">
+    <h2>{{ model.name }}</h2>
+    <div class="actions">
+        <a href="{{ url_for('admin_run_model', id=model.id) }}" class="btn btn-success">
+            <span class="glyphicon glyphicon-play"></span> Run
+        </a>
+        <a href="{{ url_for('admin_export_model', id=model.id) }}" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span> Export
+        </a>
+        <a href="{{ url_for('admin_update_model', id=model.id) }}" class="btn btn-warning">
+            <span class="glyphicon glyphicon-edit"></span> Edit
+        </a>
+        <a href="{{ url_for('admin_delete_model', id=model.id) }}" class="btn btn-danger">
+            <span class="glyphicon glyphicon-trash"></span> Delete
+        </a>
+    </div>
+</div></div>
+
+<div class="row summary"><div class="col-xs-12">
+    <dl class="dl-horizontal">
+        <dt>Type</dt>
+        <dd>{{ model.type }}</dd>
+
+        <dt>Public?</dt>
+        <dd>
+            {% if model.public %}<span class="glyphicon glyphicon-ok text-success"></span>
+            {% else %}<span class="glyphicon glyphicon-remove text-danger"></span>
+            {% endif %}
+        </dd>
+
+        {% if model.type == 'google' %}
+
+            <dt>Matlab Function</dt>
+            <dd>{{ model.get_data().matlab_function }}</dd>
+
+            <dt>Average Window Size</dt>
+            <dd>{{ model.get_data().average_window_size }}</dd>
+
+        {% endif %}
+    </dl>
+</div></div>
+
+{% if model.type == 'google' %}
+
+    <div class="row"><div class="col-xs-12">
+        <h3>Terms</h3>
+        <ul class="list-unstyled">{% for t in model.google_terms | sort(attribute='term') %}
+            <li>{{ t.term }}</li>
+        {% endfor %}</ul>
+    </div></div>
+
+{% endif %}
+
+{% if model.type == 'twitter' %}<div class="row">
+
+    {% for group in model.twitter_ngrams | groupby('region') %}
+
+    <div class="col-xs-3">
+        <h3>N-Grams for {{ REGIONS[group.grouper] }}</h3>
+        <ul class="list-unstyled">{% for n in group.list | sort(attribute='ngram') %}
+            <li>{{ n.ngram }}</li>
+        {% endfor %}</ul>
+    </div>
+
+    {% endfor %}
+
+</div>{% endif %}
+
+{% endblock %}

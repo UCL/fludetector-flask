@@ -1,0 +1,50 @@
+body {
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+.header {
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+}
+.header .breadcrumb {
+  margin-bottom: 0;
+  margin-top: 20px;
+}
+h1 {
+  line-height: 40px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.form-title {
+    color: #959595;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.raw-scores {
+  height: 280px;
+  overflow-y: auto;
+}
+.admin-link {
+  margin-top: 30px;
+}
+.flashes {
+  bottom: 0;
+  left: 10px;
+  list-style: none;
+  margin: 0;
+  min-width: 250px;
+  padding: 0;
+  position: fixed;
+}
+.flashes .alert {
+  margin-bottom: 5px;
+}
+#graph {
+  height: 400px;
+}
+.admin.models.retrieve .summary {
+  margin-top: 20px;
+}

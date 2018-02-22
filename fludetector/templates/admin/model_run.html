@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% set page = 'models run' %}
+{% set title = 'Run Model' %}
+
+{% block breadcrumbs %}
+    <li><a href="{{ url_for('admin_home') }}">Home</a></li>
+    <li><a href="{{ url_for('admin_list_models') }}">Models</a></li>
+    <li><a href="{{ url_for('admin_retrieve_model', id=model.id) }}">{{ model.name }}</a></li>
+    <li class="active">Run</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row col-xs-12">
+    <h2>Run {{model.name }}</h2>
+</div>
+
+<div class="row"><div class="col-xs-12 col-sm-6">
+    <form action="" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group date datepicker {% if form.start.errors %}has-error{% endif %}">
+            {{ form.start.label(class_='control-label') }}
+            {{ form.start(class_='form-control') }}
+            <p class="help-block">{{ form.start.description }}</p>
+            {% for e in form.start.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group date datepicker {% if form.end.errors %}has-error{% endif %}">
+            {{ form.end.label(class_='control-label') }}
+            {{ form.end(class_='form-control') }}
+            <p class="help-block">{{ form.end.description }}</p>
+            {% for e in form.end.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+
+        {% if model.type == 'csv' %}
+
+            <div class="form-group {% if form.csv_file.errors %}has-error{% endif %}">
+                {{ form.csv_file.label(class_='control-label') }}
+                {{ form.csv_file() }}
+                <p class="help-block">{{ form.csv_file.description }}</p>
+                {% for e in form.csv_file.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+            </div>
+
+        {% endif %}
+
+        <input type="submit" class="btn btn-primary" value="Run Model">
+    </form>
+</div></div>
+
+{% endblock %}

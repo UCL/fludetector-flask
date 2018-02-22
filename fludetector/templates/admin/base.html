@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% set title = 'Admin - ' + title %}
+{% set page = 'admin ' + page %}
+
+{% block nav %}
+  <li role="presentation"><a href="{{ url_for('home') }}">Back to Public</a></li>
+  <li role="presentation" {% if 'home' in page %}class="active"{% endif %}><a href="{{ url_for('admin_home') }}">Home</a></li>
+  <li role="presentation" {% if 'models' in page %}class="active"{% endif %}><a href="{{ url_for('admin_list_models') }}">Models</a></li>
+  <li role="presentation" {% if 'logs' in page %}class="active"{% endif %}><a href="{{ url_for('admin_list_logs') }}">Logs</a></li>
+{% endblock %}
+
+{% block admin_link %}
+  <a href="{{ url_for('home') }}">
+    <span class="glyphicon glyphicon-log-out"></span> Public
+  </a>
+{% endblock %}

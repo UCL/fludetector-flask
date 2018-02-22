@@ -1,0 +1,32 @@
+{% extends "public.html" %}
+{% set page = 'public about' %}
+{% set title = 'About' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <p>Flu Detector (version 2; find more about version 1 <a href="http://twitter.lampos.net/">here</a>) uses Twitter content or Google search data to estimate influenza-like illness (flu) rates in England. Daily flu rate estimates reflect on data from the past 7 days. This website is supported by the EPSRC IRC project <a href="https://www.i-sense.org.uk/">i-sense</a> (Early-Warning Sensing Systems for Infectious Diseases) and a Google Research Sponsorship.</p>
+            <p>Note that regional scores (i.e., everything but the scores for "England") are still under development. All estimates should be considered as experimental (see the website's disclaimer below).</p>
+
+            <h3>Research Team</h3>
+            <p>The research team behind Flu Detector is based at the <a href="http://www.cs.ucl.ac.uk/">Computer Science Department</a> of <a href="http://www.ucl.ac.uk/">University College London</a>.</p>
+            <dl class="dl-horizontal">
+                <dt><a href="http://www.lampos.net">Vasileios Lampos</a></dt><dl>, Senior Research Associate</dl>
+                <dt><a href="http://www0.cs.ucl.ac.uk/people/B.Zou.html">Bin Zou</a></dt><dl>, PhD Student</dl>
+                <dt><a href="http://mediafutures.cs.ucl.ac.uk/people/IngemarCox/">Ingemar J. Cox</a></dt><dl>, Professor in Information Retrieval</dl>
+            </dl>
+            <strong>Past Members:</strong> <a href="http://www.jkg.dk">Jens K. Geyti</a></dt>
+
+            <h3>Relevant Publications</h3>
+            <p><ul>
+                <li>Vasileios Lampos, Bin Zou and Ingemar J. Cox. <a href="http://dl.acm.org/citation.cfm?doid=3038912.3052622">Enhancing feature selection using word embeddings: The case of flu surveillance</a>. <strong>Proc. of the 26th International Conference on World Wide Web</strong>, pp. 695-704, 2017.</li>
+                <li>Vasileios Lampos. <a href="https://arxiv.org/abs/1612.03494">Flu Detector: Estimating influenza-like illness rates from online user-generated content</a>. Technical Report, <strong>Computing Research Repository</strong>, 2016. arXiv:1612.03494</li>
+                <li>Vasileios Lampos, Andrew Miller, Steve Crossan and Christian Stefansen. <a href="http://www.nature.com/articles/srep12760">Advances in nowcasting influenza-like illness rates using search query logs</a>. <strong>Scientific Reports</strong>, vol. 5 (12760), 2015. doi:10.1038/srep12760</li>
+                <li>Vasileios Lampos, Elad Yom-Tov, Richard Pebody and Ingemar J. Cox. <a href="http://link.springer.com/article/10.1007/s10618-015-0427-9">Assessing the impact of a health intervention via user-generated Internet content</a>. <strong>Data Mining and Knowledge Discovery</strong>, vol. 29 (5), pp. 1434-1457, 2015. doi:10.1007/s10618-015-0427-9</li>
+            </ul></p>
+
+            <h3>Disclaimer</h3>
+            <p>The information contained in this web site serves as a demonstration of research currently under way at University College London (UCL) and is provided 'as is' without warranty of any kind. Any reliance you place on this information is strictly at your own risk. Flu Detector is a demonstration of a research product and is used for research purposes only. We make no claim for its medical usability. UCL is not responsible for any use of this data. Through this web site you are able to link to other web sites which are not under our control. Therefore, the inclusion of any links does not necessarily imply a recommendation or endorses the view expressed within them. Access to this web site may be suspended temporarily and without any notice in circumstances of system failure or maintenance or for reasons beyond our control. We reserve the right to remove or alter the content of this web site at any time and without prior notice.</p>
+        </div>
+    </div>
+{% endblock %}

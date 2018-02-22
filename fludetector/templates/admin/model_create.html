@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% set page = 'models create' %}
+{% set title = 'Create Model' %}
+
+{% block breadcrumbs %}
+    <li><a href="{{ url_for('admin_home') }}">Home</a></li>
+    <li><a href="{{ url_for('admin_list_models') }}">Models</a></li>
+    <li class="active">Create Model</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row col-xs-12">
+    {% if model %} <h2>Update {{ model.name }}</h2>
+    {% else %}<h2>Create {{ form.type.data | title }} Model</h2>
+    {% endif %}
+</div>
+
+<div class="row"><div class="col-xs-12 col-sm-6">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group {% if form.name.errors %}has-error{% endif %}">
+            {{ form.name.label(class_='control-label') }}
+            {{ form.name(class_='form-control') }}
+            <p class="help-block">{{ form.name.description }}</p>
+            {% for e in form.name.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group checkbox {% if form.public.errors %}has-error{% endif %}">
+            <p><strong>{{ form.public.label.text }}</strong></p>
+            <label for="public">
+                {{ form.public() }}
+                {{ form.public.description }}
+            </label>
+            {% for e in form.public.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+
+        {% if form.type.data in ['google', 'twitter'] %}
+
+            <div class="form-group {% if form.matlab_function.errors %}has-error{% endif %}">
+                {{ form.matlab_function.label(class_='control-label') }}
+                {{ form.matlab_function(class_='form-control') }}
+                <p class="help-block">{{ form.matlab_function.description }}</p>
+                {% for e in form.matlab_function.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+            </div>
+
+            <div class="form-group {% if form.average_window_size.errors %}has-error{% endif %}">
+                {{ form.average_window_size.label(class_='control-label') }}
+                {{ form.average_window_size(class_='form-control') }}
+                <p class="help-block">{{ form.average_window_size.description }}</p>
+                {% for e in form.average_window_size.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+            </div>
+
+        {% endif %}
+
+        {% if form.type.data == 'google' %}
+
+            <div class="form-group {% if form.google_terms.errors %}has-error{% endif %}">
+                {{ form.google_terms.label(class_='control-label') }}
+                <p class="help-block">{{ form.google_terms.description }}</p>
+                {% for e in form.google_terms.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                {{ form.google_terms(class_='form-control') }}
+            </div>
+
+        {% elif form.type.data == 'twitter' %}
+
+            <div class="form-group {% if form.ngrams_e.errors %}has-error{% endif %}">
+                {{ form.ngrams_e.label(class_='control-label') }}
+                <p class="help-block">{{ form.ngrams_e.description }}</p>
+                {% for e in form.ngrams_e.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                {{ form.ngrams_e(class_='form-control') }}
+            </div>
+
+            <div class="form-group {% if form.ngrams_l.errors %}has-error{% endif %}">
+                {{ form.ngrams_l.label(class_='control-label') }}
+                <p class="help-block">{{ form.ngrams_l.description }}</p>
+                {% for e in form.ngrams_l.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                {{ form.ngrams_l(class_='form-control') }}
+            </div>
+
+            <div class="form-group {% if form.ngrams_m.errors %}has-error{% endif %}">
+                {{ form.ngrams_m.label(class_='control-label') }}
+                <p class="help-block">{{ form.ngrams_m.description }}</p>
+                {% for e in form.ngrams_m.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                {{ form.ngrams_m(class_='form-control') }}
+            </div>
+
+            <div class="form-group {% if form.ngrams_n.errors %}has-error{% endif %}">
+                {{ form.ngrams_n.label(class_='control-label') }}
+                <p class="help-block">{{ form.ngrams_n.description }}</p>
+                {% for e in form.ngrams_n.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                {{ form.ngrams_n(class_='form-control') }}
+            </div>
+
+            <div class="form-group {% if form.ngrams_s.errors %}has-error{% endif %}">
+                {{ form.ngrams_s.label(class_='control-label') }}
+                <p class="help-block">{{ form.ngrams_s.description }}</p>
+                {% for e in form.ngrams_s.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                {{ form.ngrams_s(class_='form-control') }}
+            </div>
+
+        {% endif %}
+
+
+        <input type="submit" class="btn btn-primary" value="{% if model %}Update{% else %}Create{% endif %} Model">
+    </form>
+</div></div>
+
+{% endblock %}

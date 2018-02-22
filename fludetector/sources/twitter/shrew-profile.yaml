@@ -1,0 +1,141 @@
+jobname: Geofilter Fludetector
+about: Categorise Tweets into regions and tokenize the text
+output: ${output}
+jars:
+  - /home/jgeyti/hadoop-lzo-0.4.19.jar
+  - common-1.0-SNAPSHOT.jar
+  - ark-tweet-nlp-0.3.2.jar
+args:
+  day: null
+  input0: null
+  input1: null
+  input2: null
+  output: null
+files:
+  england: polygons/england.coords
+  east_midlands: polygons/east_midlands
+  eastern: polygons/eastern
+  london: polygons/london
+  north_east: polygons/north_east
+  north_west: polygons/north_west
+  south_central: polygons/south_central
+  south_east_coast: polygons/south_east_coast
+  south_west: polygons/south_west
+  wales: polygons/wales
+  west_midlands: polygons/west_midlands
+  yorkshire_and_the_humber: polygons/yorkshire_and_the_humber
+mappers:
+  - input:
+    - ${input0}
+    - ${input1}
+    - ${input2}
+    objects:
+      england: new GeoShape(files.england)
+      east_midlands: new GeoShape(files.east_midlands)
+      eastern: new GeoShape(files.eastern)
+      london: new GeoShape(files.london)
+      north_east: new GeoShape(files.north_east)
+      north_west: new GeoShape(files.north_west)
+      south_central: new GeoShape(files.south_central)
+      south_east_coast: new GeoShape(files.south_east_coast)
+      south_west: new GeoShape(files.south_west)
+      wales: new GeoShape(files.wales)
+      west_midlands: new GeoShape(files.west_midlands)
+      yorkshire_and_the_humber: new GeoShape(files.yorkshire_and_the_humber)
+      dateConverter: new DateConverter("EEE MMM d HH:mm:ss Z yyyy", "yyyyMMdd")
+      dateParser: new java.text.SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy")
+    map: |
+      try {
+
+        def tweet = null
+        def date = null
+        def ymd = null
+
+        try {
+          tweet = Json.parse(value)
+
+          // we're processing tweets from "yesterday", "today", and "tomorrow".
+          // ignore tweets that aren't on the expected date
+          ymd = "${day}"
+          if (dateConverter.convert(tweet.created_at) != ymd) {
+            count("1-outside-daterange", 1)
+            return
+          }
+        } catch (all) {
+          count("0-parse-errors", 1)
+          return
+        }
+
+        // this is a tweet we're interested in
+        count("0-tweets", 1)
+
+        // tweet is retweet?
+        def rt = "f"
+        try {
+          if (tweet.containsKey('retweeted_status')) {
+            rt = "t"
+            count("rt", 1)
+          }
+        } catch(all){
+          count("retweet-exception", 1)
+        }
+
+        // tweet has coordinate?
+        def coord = edu.ucl.mrrr.common.Twitter.getPoint(tweet)
+        if (coord == null) {
+          count("2-tweets-coordinates-without", 1)
+          return
+        } else {
+          count("2-tweets-coordinates-with", 1)
+        }
+
+        // check region and whether tweet is in england
+        def region = "?"
+        def isengland = "?"
+
+        // first, check if it's at least within england
+        if (england.contains(coord.latitude, coord.longitude)) isengland = "e"
+
+        if (isengland == "?") {
+          count("3-tweet-england-outside", 1)
+        } else {
+          count("3-tweet-england-inside", 1)
+        }
+
+        // see if we can locate it
+        if (london.contains(coord.latitude, coord.longitude)) region = "l"
+        else if (east_midlands.contains(coord.latitude, coord.longitude)) region = "m"
+        else if (eastern.contains(coord.latitude, coord.longitude)) region = "m"
+        else if (north_east.contains(coord.latitude, coord.longitude)) region = "n"
+        else if (north_west.contains(coord.latitude, coord.longitude)) region = "n"
+        else if (south_central.contains(coord.latitude, coord.longitude)) region = "s"
+        else if (south_east_coast.contains(coord.latitude, coord.longitude)) region = "s"
+        else if (south_west.contains(coord.latitude, coord.longitude)) region = "s"
+        else if (west_midlands.contains(coord.latitude, coord.longitude)) region = "m"
+        else if (yorkshire_and_the_humber.contains(coord.latitude, coord.longitude)) region = "n"
+        else if (wales.contains(coord.latitude, coord.longitude)) region = "?" // there's a sliiiight overlap between wales and west_midlands causing some 10 tweets a day to get caught in wales. this line is here to make it the same as in the ngrams batch job
+
+        if (region == "?") {
+          count("3-tweet-sha-outside", 1)
+        } else {
+          count("3-tweet-sha-inside", 1)
+          count("3-tweet-sha-$region", 1)
+        }
+
+        def tweetTextPrepared = tweet.text.replace("\r","").replace("\n"," ").replace("\t", " ")
+        def twokenized = cmu.arktweetnlp.Twokenize.tokenize(tweetTextPrepared).join(" ")
+
+        emit("$ymd\t$isengland\t$region\t$rt", twokenized)
+
+      } catch (all) {
+        count("unknown-exception",1)
+      }
+
+reducer:
+  key: org.apache.hadoop.io.Text
+  val: org.apache.hadoop.io.Text
+  reduce: |
+    def ymd = key.toString().split("\t")[0]
+    for (value in values) {
+      emit(key, value, ymd)
+    }

@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+{% set page = 'models delete' %}
+{% set title = 'Delete Model?' %}
+
+{% block breadcrumbs %}
+    <li><a href="{{ url_for('admin_home') }}">Home</a></li>
+    <li><a href="{{ url_for('admin_list_models') }}">Models</a></li>
+    <li><a href="{{ url_for('admin_retrieve_model', id=model.id) }}">{{ model.name }}</a></li>
+    <li class="active">Delete</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row col-xs-12">
+    <h2>Delete {{ model.name }}?</h2>
+</div>
+
+<div class="row"><div class="col-xs-12 col-sm-6">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group {% if form.name.errors %}has-error{% endif %}">
+            {{ form.name.label(class_='control-label') }}
+            {{ form.name(class_='form-control') }}
+            <p class="help-block">{{ form.name.description }}</p>
+            {% for e in form.name.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+        <input type="submit" class="btn btn-danger" value="Delete Model">
+    </form>
+</div></div>
+
+{% endblock %}

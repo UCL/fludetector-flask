@@ -1,0 +1,68 @@
+{% extends "public.html" %}
+{% set page = 'public docs' %}
+{% set title = 'Docs' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <h2>The API</h2>
+
+            <p>As well as the graphs, tables, and CSV exports available from <a href="{{ url_for('home') }}">the home page</a>, we also provide an API for programatic access to our data.</p>
+
+            <h3>Scores</h3>
+
+            <p>To fetch score data use the following URL:</p>
+
+            <p><pre>{{ url_for('api_scores', _external=True) }}</pre></p>
+
+            <h4>Arguments</h4>
+            <p>
+                <dl class="dl-horizontal">
+                    <dt><code>model</code></dt>
+                    <dd>The ID of the model you'd like data for</dd>
+                    <dt><code>region</code></dt>
+                    <dd>The region to get results for. Value must be one of the following: <code>e</code> (England), <code>n</code> (North of England), <code>m</code> (Midlands and East of England), <code>l</code> (London), or <code>s</code> (South of England)</dd>
+                    <dt><code>start</code></dt>
+                    <dd>Start date of requested time period, inclusive. In the format <code>YYYY-MM-DD</code></dd>
+                    <dt><code>end</code></dt>
+                    <dd>End date of requested time period, non-inclusive. In the format <code>YYYY-MM-DD</code></dd>
+                    <dt><code>smoothing</code></dt>
+                    <dd>Number of days to smooth data over using a moving average filter, as described in the <a href="http://uk.mathworks.com/help/curvefit/smooth.html">Matlab documentation</a>.</dd>
+                    <dt><code>resolution</code></dt>
+                    <dd>The density of the data points returned, either <code>day</code> or <code>week</code></dd>
+                </dl>
+            </p>
+
+            <h4>Example</h4>
+            <p><b>Request:</b> </p>
+            <p><a href="{{ url_for('api_scores', _external=True, **example) }}"><pre>{{ url_for('api_scores', _external=True, **example) }}</pre></a></p>
+            <p><b>Response:</b></p>
+            <p><pre>{
+    "end": "{{ example.end }}",
+    "model": {id: {{ model.id }}, name: "{{ model.name }}"},
+    "region": "{{ example.region }}",
+    "resolution": "{{ example.resolution }}",
+    "scores": [
+        {
+            "date": "{{ example.start }}",
+            "score": 0.0
+        },
+        ...],
+    "start": "{{ example.start }}"
+}</pre></p>
+
+            <h3>Models</h3>
+
+            <p>To fetch a list of models:</p>
+
+            <p><pre>{{ url_for('api_models', _external=True) }}</pre></p>
+
+            <h4>Example</h4>
+            <p><b>Request:</b> </p>
+            <p><a href="{{ url_for('api_models', _external=True) }}"><pre>{{ url_for('api_models', _external=True) }}</pre></a></p>
+            <p><b>Response:</b></p>
+            <p><pre>[{id: {{ model.id }}, name: "{{ model.name }}"}, ...]</pre></p>
+
+        </div>
+    </div>
+{% endblock %}

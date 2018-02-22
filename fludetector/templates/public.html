@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block nav %}
+  <li role="presentation" {% if 'home' in page %}class="active"{% endif %}><a href="{{ url_for('home') }}">Home</a></li>
+  <li role="presentation" {% if 'about' in page %}class="active"{% endif %}><a href="{{ url_for('about') }}">About</a></li>
+  <li role="presentation" {% if 'docs' in page %}class="active"{% endif %}><a href="{{ url_for('docs') }}">Docs</a></li>
+{% endblock %}
+
+
+{% block admin_link %}
+  <a href="{{ url_for('admin_home') }}">
+    <span class="glyphicon glyphicon-log-in"></span> Admin
+  </a>
+{% endblock %}

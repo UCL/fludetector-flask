@@ -1,0 +1,13 @@
+/.env
+/venv
+/fludetector.sublime-project
+/fludetector.sublime-workspace
+/data/google_queries.txt
+*.pyc
+/data.db
+/logs
+/data.db-journal
+/gunicorn.pid
+/scripts/daily.sh
+/data/twitter
+/twitter

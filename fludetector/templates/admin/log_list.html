@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+{% set page = 'logs' %}
+{% set title = 'Logs' %}
+
+{% block content %}
+
+<ul class="list-unstyled">{% for l in logs | sort %}
+    <li><a href="{{ url_for('admin_retrieve_log', filename=l) }}">{{ l }}</a></li>
+{% endfor %}</ul>
+
+{% endblock %}

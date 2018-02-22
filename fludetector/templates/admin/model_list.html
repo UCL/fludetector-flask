@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+{% set page = 'models list' %}
+{% set title = 'Models' %}
+
+
+{% block breadcrumbs %}
+    <li><a href="{{ url_for('admin_home') }}">Home</a></li>
+    <li class="active">Models</li>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row"><div class="col-xs-12">
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Create Model
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="{{ url_for('admin_create_model', type='google') }}">
+                <span class="glyphicon glyphicon-heart"></span> Google Model
+            </a></li>
+            <li><a href="{{ url_for('admin_create_model', type='twitter') }}">
+                <span class="glyphicon glyphicon-tree-deciduous"></span> Twitter Model
+            </a></li>
+            <li><a href="{{ url_for('admin_create_model', type='csv') }}">
+                <span class="glyphicon glyphicon-list-alt"></span> CSV Model
+            </a></li>
+      </ul>
+    </div>
+</div></div>
+
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Type</th>
+            <th>Public?</th>
+            <th colspan="5">Score Counts</th>
+            <th colspan="2">Score Date Range</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            {% for r in region_codes %}<th>{{ r }}</th>{% endfor %}
+            <th>Earliest</th>
+            <th>Latest</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>{% for m in models %}
+        <tr>
+            <td><a href="{{ url_for('admin_retrieve_model', id=m.id) }}">{{ m.name }}</a></td>
+            <td>{{ m.type }}</td>
+            <td>{% if m.public %}<span class="glyphicon glyphicon-ok text-success"></span>{% endif %}</td>
+            {% for r in region_codes %}<td>{{ m.scores_for(r).count() }}</td>{% endfor %}
+            <td>{{ m.first_score.day }}</td>
+            <td>{{ m.last_score.day }}</td>
+            <td class="text-right">
+                <a href="{{ url_for('admin_run_model', id=m.id) }}" class="btn btn-sm btn-success">
+                    <span class="glyphicon glyphicon-play"></span> Run
+                </a>
+                <a href="{{ url_for('admin_export_model', id=m.id) }}" class="btn btn-sm btn-primary">
+                    <span class="glyphicon glyphicon-save"></span> Export
+                </a>
+                <a href="{{ url_for('admin_update_model', id=m.id) }}" class="btn btn-sm btn-warning">
+                    <span class="glyphicon glyphicon-edit"></span> Edit
+                </a>
+                <a href="{{ url_for('admin_delete_model', id=m.id) }}" class="btn btn-sm btn-danger">
+                    <span class="glyphicon glyphicon-trash"></span> Delete
+                </a>
+            </td>
+        </tr>
+    {% endfor %}</tbody>
+</table>
+
+{% endblock %}

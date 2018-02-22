@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% set page = 'models run' %}
+{% set title = 'Run Model' %}
+
+{% block breadcrumbs %}
+    <li><a href="{{ url_for('admin_home') }}">Home</a></li>
+    <li><a href="{{ url_for('admin_list_models') }}">Models</a></li>
+    <li><a href="{{ url_for('admin_retrieve_model', id=model.id) }}">{{ model.name }}</a></li>
+    <li class="active">Export</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row col-xs-12">
+    <h2>Export {{model.name }} Data</h2>
+    <p>Use this form to export the raw data from this model as a CSV file.</p>
+    {% if model.type == 'csv' %}
+    <p>CSV models will be exported into a format that can be read back into a different CSV model.</p>
+    {% elif model.type == 'google' %}
+    <p>Google models will export the raw scores per search term that were collected from the Google API. These will not differ between Google-type models.</p>
+    {% endif %}
+</div>
+
+<div class="row"><div class="col-xs-12 col-sm-6">
+    <form action="" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group date datepicker {% if form.start.errors %}has-error{% endif %}">
+            {{ form.start.label(class_='control-label') }}
+            {{ form.start(class_='form-control') }}
+            <p class="help-block">{{ form.start.description }}</p>
+            {% for e in form.start.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group date datepicker {% if form.end.errors %}has-error{% endif %}">
+            {{ form.end.label(class_='control-label') }}
+            {{ form.end(class_='form-control') }}
+            <p class="help-block">{{ form.end.description }}</p>
+            {% for e in form.end.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+        </div>
+
+        <input type="submit" class="btn btn-primary" value="Export Data">
+    </form>
+</div></div>
+
+{% endblock %}

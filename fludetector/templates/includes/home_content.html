@@ -1,0 +1,124 @@
+<div class="row"><div class="col-xs-12">
+    <h2 class="form-title">Graph</h2>
+    <div id="graph"></div>
+</div></div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 class="panel-title">Data Filtering</h2>
+    </div>
+    <form method="GET">
+        <div class="panel-body">
+            <div class="row">
+                <p class="form-title col-xs-12">Date Range</p>
+                <div class="form-group col-xs-12 col-sm-6 col-md-3 {% if form.start.errors %}has-error{% endif %}">
+                    <label for="start" class="control-label">Start</label>
+                    <div class="input-group date datepicker">
+                        {{ form.start(class_='form-control') }}
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                    <p class="help-block">Only show data collected on or after this date</p>
+                    {% for e in form.start.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                </div>
+                <div class="form-group col-xs-12 col-sm-6 col-md-3 {% if form.end.errors %}has-error{% endif %}">
+                    <label for="end" class="control-label">End</label>
+                    <div class="input-group date datepicker">
+                        {{ form.end(class_='form-control') }}
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                    <p class="help-block">Only show data collected before (not including) this date</p>
+                    {% for e in form.end.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                </div>
+                <div class="form-group col-xs-12 col-sm-6 col-md-3 {% if form.resolution.errors %}has-error{% endif %}">
+                    <label for="resolution" class="control-label">Resolution</label>
+                    {{ form.resolution(class_='form-control') }}
+                    <p class="help-block">How many data points to show</p>
+                    {% for e in form.resolution.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                </div>
+                <div class="form-group col-xs-12 col-sm-6 col-md-3 {% if form.smoothing.errors %}has-error{% endif %}">
+                    <label for="smoothing" class="control-label">Smoothing</label>
+                    {{ form.smoothing(class_='form-control') }}
+                    <p class="help-block">Smooth the data to avoid overly spiky results</p>
+                    {% for e in form.smoothing.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">{% for mr in form.model_regions %}{% for e in mr.errors %}<p class="text-danger">{{ e }}</p>{% endfor %}{% endfor %}</div>
+                {% set cnt = [0] %}
+                {% for m in models %}<div class="model col-xs-6 col-sm-3">
+                        <p class="form-title">{{ m.name }}</p>
+                        <div class="form-group {% if form.model_regions.errors %}has-error{% endif %}">
+                            <label class="control-label">Regions</label>
+                            {% for r in m.regions %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="{{ m.id }}-{{ r.code }}" name="model_regions-{{ cnt[0] }}" {% if (m, r.code) in form.model_regions.data %}checked{% endif%}>
+                                        {{ r.name }}
+                                        {% if cnt.append(cnt.pop() + 1) %}{% endif %}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                </div>{% endfor %}
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input type="submit" value="Show Data" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+<div class="row"><div class="col-xs-12">
+    <h2 class="form-title">Averages</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr><th>Model</th><th>Region</th><th>Average Score</th></tr>
+        </thead>
+        <tbody>{% for m, r, a in averages %}
+            <tr>
+                <td>{{ m.name }}</td>
+                <td>{{ r.name }}</td>
+                <td>{{ a }}</td>
+            </tr>
+        {% endfor %}</tbody>
+    </table>
+</div></div>
+<div class="row"><div class="col-xs-12">
+    <h2 class="form-title">Raw Scores</h2>
+    <p class="text-right">
+        <a href="{{ url_for('export', format='csv', **request.args) }}" target="_blank" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>
+            Export to CSV
+        </a>
+    </p>
+    <div class="raw-scores"><table class="table table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                {% for m, r in form.model_regions.data %}<th>{{ m.name }}</th>{% endfor %}
+            </tr>
+            <tr>
+                <th>Date</th>
+                {% for m, r in form.model_regions.data %}<th>{{ regions[r] }}</th>{% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for day, models in raw_scores.iteritems() | sort %}<tr>
+                <td>{{ day.strftime('%Y-%m-%d') }}</td>
+                {% for m, r in form.model_regions.data %}
+                    <td>{{ models[m][r] }}</td>
+                {% endfor %}
+            </tr>{% endfor %}
+        </tbody>
+    </table></div>
+</div></div>
+<script>
+    window.CHART_DATA = [
+        ['Date'{% for m, r in form.model_regions.data %}, "{{ m.name | safe }}/{{ regions[r] }}"{% endfor %}],
+        {% for day, models in raw_scores.iteritems() | sort %}
+            [new Date('{{ day.strftime('%Y-%m-%d') }}'){% for m, r in form.model_regions.data %}, {{ models[m][r] or 'null' }}{% endfor %}],
+        {% endfor %}
+    ];
+</script>
