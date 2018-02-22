@@ -9,13 +9,9 @@ This project requires:
 - python 2.7
 - virtualenv
 - SQLite3
+- lzop
 
-Once you have those, clone this repo, point your terminal at it and run:
-
-    $ ./scripts/init.sh
-
-This will get most things sorted out for you. You'll need to grab the project's
-secrets from someone, place them in a `.env` file in the project's root.
+You'll need to grab the project's secrets from someone, place them in a `.env` file in the project's root.
 Something like this:
 
     $ cat .env
@@ -27,9 +23,15 @@ Something like this:
 This env file is where the sensitive data (e.g. API keys) live, they're not
 committed to the repo.
 
+Once you have those, clone this repo, point your terminal at it and run:
+
+    $ ./scripts/init.sh
+
+This will get most things sorted out for you. 
+
 You can now run the server locally:
 
-    $ flask run
+    $ ./scripts/serve.sh
 
 Read the `init.sh` script to see what it's up to. There are also other scripts
 in this directory that you might find useful.
