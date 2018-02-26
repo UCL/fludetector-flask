@@ -11,7 +11,7 @@ set -e
 export PYTHONPATH="$PYTHONPATH:$PWD"
 
 gunicorn \
-    --bind 0.0.0.0:5002 \
+    --bind unix:/tmp/gunicorn.sock \
     --workers 4 \
     --access-logfile logs/gunicorn.access.log \
     --error-logfile logs/gunicorn.error.log \
