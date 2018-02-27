@@ -1,11 +1,14 @@
 alembic==0.9.8
-aniso8601==2.0.0
+aniso8601==2.0.1
+APScheduler==3.5.1
 click==6.7
 Flask==0.12.2
 Flask-DotEnv==0.1.1
 Flask-RESTful==0.3.6
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
+funcsigs==1.0.2
+futures==3.2.0
 google-api-python-client==1.6.5
 gunicorn==19.7.1
 httplib2==0.10.3
@@ -23,7 +26,8 @@ pytz==2018.3
 rsa==3.4.2
 sh==1.12.14
 six==1.11.0
-SQLAlchemy==1.2.3
+SQLAlchemy==1.2.4
+tzlocal==1.5.1
 uritemplate==3.0.0
 Werkzeug==0.14.1
 WTForms==2.1

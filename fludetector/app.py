@@ -13,6 +13,9 @@ from fludetector import models, scripts, forms
 from fludetector.errors import FluDetectorError
 from fludetector.models import db, get_region, REGIONS, Model, ModelScore, GoogleScore
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 app = Flask(__name__)
 env = DotEnv(app)
 
@@ -20,6 +23,15 @@ os.environ['GOOGLE_API_KEY'] = app.config['GOOGLE_API_KEY']
 
 models.init_app(app)
 scripts.init_app(app)
+
+
+def run_model_schedule():
+    print 'Run_model_schedule()'
+
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(run_model_schedule, CronTrigger.from_crontab('13 3 * * *'))
+sched.start()
 
 
 @app.errorhandler(FluDetectorError)
