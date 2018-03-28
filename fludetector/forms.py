@@ -6,7 +6,7 @@ from wtforms import Form, DateField, SelectField, StringField, IntegerField, Fie
 from wtforms.validators import InputRequired, DataRequired, NumberRange
 from sqlalchemy.orm.exc import NoResultFound
 
-from fludetector.models import db, Model, REGIONS, GoogleTerm, TwitterNgram
+from fludetector.models import Model, REGIONS, GoogleTerm, TwitterNgram
 
 
 class ModelRegionField(StringField):
