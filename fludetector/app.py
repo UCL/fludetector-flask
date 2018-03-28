@@ -26,6 +26,7 @@ scripts.init_app(app)
 
 
 def run_model_schedule():
+    scripts.runmodel(3)
     print 'Run_model_schedule()'
 
 
