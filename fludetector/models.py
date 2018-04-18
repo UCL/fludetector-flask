@@ -165,6 +165,16 @@ class GoogleScore(db.Model):
             self.day.strftime('%Y-%m-%d'), self.value)
 
 
+class GoogleLog(db.Model):
+    """Timestamp information for scores downloaded from Google"""
+    id = db.Column(db.Integer, primary_key=True)
+    score_timestamp = db.Column(db.DateTime, nullable=False)
+    score_date = db.Column(db.Date, nullable=False)
+
+    def __repr__(self):
+        return '<GoogleLog %s %s>' % (self.score_timestamp, self.score_date)
+
+
 model_twitter_ngrams = db.Table(
     'model_twitter_ngrams',
     db.Column('model_id', db.Integer, db.ForeignKey('model.id'), nullable=False),
