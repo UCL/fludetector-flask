@@ -9,7 +9,7 @@ from googleapiclient.errors import HttpError
 from sh import ssh, scp, ErrorReturnCode
 
 from fludetector.log import logger
-from fludetector.models import db, GoogleScore, ModelScore
+from fludetector.models import db, GoogleScore, ModelScore, GoogleLog
 
 
 def get_google_score(term, day):
@@ -176,6 +176,10 @@ def run_batch(batch, start, end):
         try:
             for gs in collect_google_scores(batch, start, end):
                 db.session.add(gs)
+                gl = GoogleLog()
+                gl.score_date = gs.day
+                gl.score_timestamp = datetime.utcnow()
+                db.session.add(gl)
             return
         except HttpError as e:
             if attempt == 6:
