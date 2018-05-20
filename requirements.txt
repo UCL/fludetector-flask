@@ -27,3 +27,4 @@ SQLAlchemy==1.2.3
 uritemplate==3.0.0
 Werkzeug==0.14.1
 WTForms==2.1
+stompest==2.3.0

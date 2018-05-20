@@ -8,6 +8,10 @@ from apiclient.discovery import build
 from googleapiclient.errors import HttpError
 from sh import ssh, scp, ErrorReturnCode
 
+from stompest.sync.client import Stomp
+from stompest.config import StompConfig
+from stompest.protocol import StompSpec
+
 from fludetector.log import logger
 from fludetector.models import db, GoogleScore, ModelScore, GoogleLog
 
@@ -189,6 +193,13 @@ def run_batch(batch, start, end):
             time.sleep(delay)
 
 
+def send_score_to_message_queue(score):
+    client = Stomp(StompConfig('tcp://fmapiclient.cs.ucl.ac.uk:7672', version=StompSpec.VERSION_1_0))
+    client.connect(headers={'passcode': 'admin', 'login': 'admin'})
+    client.send('/queue/PubModelScore.Q', body=score)
+    client.disconnect()
+
+
 def run(model, start, end, **kwargs):
     """
     Run this model between these two dates. Running the model means:
@@ -233,8 +244,12 @@ def run(model, start, end, **kwargs):
         td = timedelta(seconds=(calculate_end - calculate_start).days * 8)  # Assuming 8 seconds to process each day
         logger.info('To process all days in Matlab will take roughly %s' % str(td))
 
+        to_send = None
         for ms in calculate_model_scores(model, calculate_start, calculate_end):
             db.session.add(ms)
+            to_send = ms
+        if to_send is not None:
+            send_score_to_message_queue(str(to_send))
     else:
         logger.info('ModelScores already calculated')
 
