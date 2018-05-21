@@ -226,12 +226,10 @@ class CreateGoogleModelForm(CreateModelForm):
     matlab_function = StringField(
         'Matlab Function',
         description='The Matlab function to run over the raw Google data',
-        default='infer_ILI_rate_google_v4',
         validators=[InputRequired()])
     average_window_size = IntegerField(
         'Average Window Size',
         description="Before passing data to Matlab, the points can be averaged over a number of days. How many days should this model average data over? 1 means no averaging, 2 means average today's and yesterday's scores, etc. etc.",
-        default=1,
         validators=[InputRequired(), NumberRange(min=1)])
     google_terms = TermsListField(
         'Search Terms',

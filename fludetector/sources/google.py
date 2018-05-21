@@ -222,7 +222,8 @@ def run(model, start, end, **kwargs):
         # Go back a day to make sure the API can return some data
         # When the dates are near to date.today() you don't get empty responses
         # you get 400s
-        collect_start = min(needs_collecting) - timedelta(days=1)
+        window_size = model.get_data()['average_window_size']
+        collect_start = min(needs_collecting) - timedelta(days=window_size)
         collect_end = max(needs_collecting)
 
         batched = list(batches(model, collect_start, collect_end))
