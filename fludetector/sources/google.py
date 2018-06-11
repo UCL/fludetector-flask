@@ -134,7 +134,7 @@ def calculate_score(model, day):
 
 def calculate_model_scores(model, start, end):
     logger.info('Calculating new ModelScores between %s and %s' % (start, end))
-    days_apart = (end - start).days
+    days_apart = (end - start).days + 1
     days = (start + timedelta(days=d) for d in xrange(days_apart))
     for day in days:
         s = calculate_score(model, day)
@@ -143,7 +143,7 @@ def calculate_model_scores(model, start, end):
 
 
 def days_missing_google_score(model, start, end):
-    requested = set(start + timedelta(days=i) for i in xrange((end - start).days))
+    requested = set(start + timedelta(days=i) for i in xrange((end - start).days + 1))
     for term in model.google_terms:
         known = set(s.day for s in term.scores)
         for missing in requested - known:
@@ -151,7 +151,7 @@ def days_missing_google_score(model, start, end):
 
 
 def days_missing_model_score(model, start, end):
-    requested = set(start + timedelta(days=i) for i in xrange((end - start).days))
+    requested = set(start + timedelta(days=i) for i in xrange((end - start).days + 1))
     known = set(s.day for s in model.scores)
     for missing in requested - known:
         yield missing
@@ -193,10 +193,11 @@ def run_batch(batch, start, end):
             time.sleep(delay)
 
 
-def send_score_to_message_queue(score):
+def send_score_to_message_queue(date, score):
     client = Stomp(StompConfig('tcp://fmapiclient.cs.ucl.ac.uk:7672', version=StompSpec.VERSION_1_0))
     client.connect(headers={'passcode': 'admin', 'login': 'admin'})
-    client.send('/queue/PubModelScore.Q', body=score)
+    message = 'date={0}\nvalue={1}'.format(date. str(score))
+    client.send('/queue/PubModelScore.Q', body=message)
     client.disconnect()
 
 
@@ -237,6 +238,8 @@ def run(model, start, end, **kwargs):
     else:
         logger.info('GoogleScores already collected')
 
+    msg_date = None
+    msg_value = None
     needs_calculating = list(days_missing_model_score(model, start, end))
     if needs_calculating:
         calculate_start = min(needs_calculating)
@@ -245,13 +248,14 @@ def run(model, start, end, **kwargs):
         td = timedelta(seconds=(calculate_end - calculate_start).days * 8)  # Assuming 8 seconds to process each day
         logger.info('To process all days in Matlab will take roughly %s' % str(td))
 
-        to_send = None
         for ms in calculate_model_scores(model, calculate_start, calculate_end):
             db.session.add(ms)
-            to_send = ms
-        if to_send is not None:
-            send_score_to_message_queue(str(to_send))
+            msg_date = ms.day
+            msg_value = ms.value
     else:
         logger.info('ModelScores already calculated')
 
     db.session.commit()
+    if msg_date is not None and msg_value is not None:
+        send_score_to_message_queue(msg_date, msg_value)
+        logger.info('Last ModelScore value sent to message queue')
