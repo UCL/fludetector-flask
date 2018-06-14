@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from dateutil.relativedelta import relativedelta
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import Form, DateField, SelectField, StringField, IntegerField, FieldList, ValidationError, BooleanField, TextAreaField
@@ -148,10 +148,10 @@ class GetScoresWebForm(GetScoresForm):
         super(GetScoresWebForm, self).__init__(*args, **kwargs)
         if self.model_regions.data and not self.start.data:
             start = self.model_regions.data[0][0].last_score.day
-            start = start - timedelta(days=7)
+            start = start - relativedelta(months=1)
             self.start.process_data(start)
         if self.start.data and not self.end.data:
-            end = self.start.data + timedelta(days=14)
+            end = self.model_regions.data[0][0].last_score.day
             self.end.process_data(end)
 
     def scores(self):

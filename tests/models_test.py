@@ -7,7 +7,8 @@ import datetime
 
 class ModelsTest(unittest.TestCase):
 
-    def create_app(self):
+    @staticmethod
+    def create_app():
         app = Flask(__name__)
         app.config['TESTING'] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
@@ -16,7 +17,7 @@ class ModelsTest(unittest.TestCase):
         return app
 
     def setUp(self):
-        db.init_app(self.create_app())
+        db.init_app(ModelsTest.create_app())
         db.create_all()
 
     def tearDown(self):
