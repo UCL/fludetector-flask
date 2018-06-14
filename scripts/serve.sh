@@ -10,7 +10,7 @@ set -e
 . venv/bin/activate
 export PYTHONPATH="$PYTHONPATH:$PWD"
 
-gunicorn \
+exec gunicorn \
     --bind unix:/var/run/gunicorn.sock \
     --workers 4 \
     --access-logfile logs/gunicorn.access.log \
