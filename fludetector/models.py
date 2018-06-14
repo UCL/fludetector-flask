@@ -65,7 +65,7 @@ class Model(db.Model):
         """
         scores = self.scores.filter(
             ModelScore.day >= start,
-            ModelScore.day < end,
+            ModelScore.day <= end,
             ModelScore.region == region).all()
 
         if resolution == 'week':

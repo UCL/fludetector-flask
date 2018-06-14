@@ -1,22 +1,27 @@
 from flask import Flask
-from fludetector.models import GoogleLog, db
+from fludetector.models import GoogleLog, Model, ModelScore, db
 from sqlalchemy.exc import IntegrityError
 import unittest
 import datetime
-import os
 
 
 class ModelsTest(unittest.TestCase):
 
-    def setUp(self):
+    def create_app(self):
         app = Flask(__name__)
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../test.db'
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        db.init_app(app)
         app.app_context().push()
-        db.session.close()
-        db.drop_all()
+        return app
+
+    def setUp(self):
+        db.init_app(self.create_app())
         db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
 
     def testGoogleLog(self):
         """ Creates and persists a valid GoogleLog instance """
@@ -48,10 +53,33 @@ class ModelsTest(unittest.TestCase):
         with self.assertRaises(IntegrityError):
             db.session.commit()
 
-    def tearDown(self):
-        db.drop_all()
-        db.engine.dispose()
-        os.remove('../test.db')
+    def testModel(self):
+        """ Evaluates methods not annotated as @property"""
+        ml = Model()
+        ml.name = 'Test Model'
+        ml.type = 'google'
+        ml.public = True
+        ml.data = 'matlab_function,1'
+        db.session.add(ml)
+        score = 6.5
+        day = datetime.date.today() - datetime.timedelta(days=3)
+        for i in xrange(4):
+            ms = ModelScore()
+            ms.day = day + datetime.timedelta(days=i)
+            ms.region = 'e'
+            ms.value = score - i
+            ms.model_id = 1
+            db.session.add(ms)
+        db.session.commit()
+        dbmodel = db.session.query(Model).first()
+        expected = db.session.query(ModelScore).all()
+        result_get_scores = dbmodel.get_scores(start=day, end=datetime.date.today(), region='e', resolution=1)
+        self.assertEqual(result_get_scores, expected)
+        result_regions = dbmodel.scores_for('e').all()
+        self.assertEqual(result_regions, expected)
+        result_get_data = dbmodel.get_data()
+        self.assertEqual(result_get_data['matlab_function'], 'matlab_function')
+        self.assertEqual(result_get_data['average_window_size'], 1)
 
 
 if __name__ == '__main__':

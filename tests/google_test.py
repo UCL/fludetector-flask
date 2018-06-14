@@ -18,7 +18,7 @@ class GoogleTest(unittest.TestCase):
     def setUp(self):
         db.init_app(self.create_app())
         db.create_all()
-        db.engine.execute('insert into model (id, name, type, public, data) values (1, "Test Model", "google", 1, "matlab_function,1")')
+        db.engine.execute('insert into model values (1, "Test Model", "google", 1, "matlab_function,1")')
         score = 6.5
         start_date = datetime.date.today() - datetime.timedelta(days=5)
         for i in xrange(4):
@@ -60,6 +60,7 @@ class GoogleTest(unittest.TestCase):
         self.assertEqual(max(model_missing), datetime.date.today())
 
     def testBatches(self):
+        """ Expect one batch (batches of up to 30 terms) """
         model = db.session.query(Model).first()
         start_date = datetime.date.today() - datetime.timedelta(days=1)
         end_date = datetime.date.today()
