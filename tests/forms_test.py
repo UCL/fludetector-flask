@@ -1,6 +1,7 @@
 from flask import Flask
 from fludetector.forms import GetScoresWebForm
 from fludetector.models import db, Model, ModelScore, GoogleScore
+from dateutil.relativedelta import relativedelta
 import datetime
 import unittest
 
@@ -49,7 +50,10 @@ class FormsTest(unittest.TestCase):
         self.assertEqual(score.region, 'e')
         self.assertEqual(score.value, 4.5)
         scores_form = GetScoresWebForm(None, model_regions=[(score.model, score.region)])
-        self.assertEqual(scores_form.end.__html__(), '<input id="end" name="end" type="text" value="2018-06-14">')
-        self.assertEqual(scores_form.start.__html__(), '<input id="start" name="start" type="text" value="2018-05-14">')
+        today = datetime.date.today()
+        input_start = '<input id="start" name="start" type="text" value="{0}">'.format(today - relativedelta(months=1))
+        input_end = '<input id="end" name="end" type="text" value="{0}">'.format(today)
+        self.assertEqual(scores_form.end.__html__(), input_end)
+        self.assertEqual(scores_form.start.__html__(), input_start)
         all_scores = scores_form.model_regions.data[0][0].scores.all()
         self.assertEqual(len(all_scores), 32)
