@@ -65,7 +65,7 @@ class Model(db.Model):
         """
         scores = self.scores.filter(
             ModelScore.day >= start,
-            ModelScore.day < end,
+            ModelScore.day <= end,
             ModelScore.region == region).all()
 
         if resolution == 'week':
@@ -163,6 +163,16 @@ class GoogleScore(db.Model):
     def __repr__(self):
         return '<GoogleScore %s %f>' % (
             self.day.strftime('%Y-%m-%d'), self.value)
+
+
+class GoogleLog(db.Model):
+    """Timestamp information for scores downloaded from Google"""
+    id = db.Column(db.Integer, primary_key=True)
+    score_timestamp = db.Column(db.DateTime, nullable=False)
+    score_date = db.Column(db.Date, nullable=False)
+
+    def __repr__(self):
+        return '<GoogleLog %s %s>' % (self.score_timestamp, self.score_date)
 
 
 model_twitter_ngrams = db.Table(

@@ -8,8 +8,12 @@ from apiclient.discovery import build
 from googleapiclient.errors import HttpError
 from sh import ssh, scp, ErrorReturnCode
 
+from stompest.sync.client import Stomp
+from stompest.config import StompConfig
+from stompest.protocol import StompSpec
+
 from fludetector.log import logger
-from fludetector.models import db, GoogleScore, ModelScore
+from fludetector.models import db, GoogleScore, ModelScore, GoogleLog
 
 
 def get_google_score(term, day):
@@ -130,7 +134,7 @@ def calculate_score(model, day):
 
 def calculate_model_scores(model, start, end):
     logger.info('Calculating new ModelScores between %s and %s' % (start, end))
-    days_apart = (end - start).days
+    days_apart = (end - start).days + 1
     days = (start + timedelta(days=d) for d in xrange(days_apart))
     for day in days:
         s = calculate_score(model, day)
@@ -139,7 +143,7 @@ def calculate_model_scores(model, start, end):
 
 
 def days_missing_google_score(model, start, end):
-    requested = set(start + timedelta(days=i) for i in xrange((end - start).days))
+    requested = set(start + timedelta(days=i) for i in xrange((end - start).days + 1))
     for term in model.google_terms:
         known = set(s.day for s in term.scores)
         for missing in requested - known:
@@ -147,7 +151,7 @@ def days_missing_google_score(model, start, end):
 
 
 def days_missing_model_score(model, start, end):
-    requested = set(start + timedelta(days=i) for i in xrange((end - start).days))
+    requested = set(start + timedelta(days=i) for i in xrange((end - start).days + 1))
     known = set(s.day for s in model.scores)
     for missing in requested - known:
         yield missing
@@ -176,6 +180,10 @@ def run_batch(batch, start, end):
         try:
             for gs in collect_google_scores(batch, start, end):
                 db.session.add(gs)
+                gl = GoogleLog()
+                gl.score_date = gs.day
+                gl.score_timestamp = datetime.utcnow()
+                db.session.add(gl)
             return
         except HttpError as e:
             if attempt == 6:
@@ -183,6 +191,14 @@ def run_batch(batch, start, end):
             delay = 3 ** attempt
             logger.warn('HTTP error on attempt %d, sleeping and trying again in %d seconds' % (attempt, delay))
             time.sleep(delay)
+
+
+def send_score_to_message_queue(date, score):
+    client = Stomp(StompConfig('tcp://fmapiclient.cs.ucl.ac.uk:7672', version=StompSpec.VERSION_1_0))
+    client.connect(headers={'passcode': 'admin', 'login': 'admin'})
+    message = 'date={0}\nvalue={1}'.format(date. str(score))
+    client.send('/queue/PubModelScore.Q', body=message)
+    client.disconnect()
 
 
 def run(model, start, end, **kwargs):
@@ -207,7 +223,8 @@ def run(model, start, end, **kwargs):
         # Go back a day to make sure the API can return some data
         # When the dates are near to date.today() you don't get empty responses
         # you get 400s
-        collect_start = min(needs_collecting) - timedelta(days=1)
+        window_size = model.get_data()['average_window_size']
+        collect_start = min(needs_collecting) - timedelta(days=window_size)
         collect_end = max(needs_collecting)
 
         batched = list(batches(model, collect_start, collect_end))
@@ -221,6 +238,8 @@ def run(model, start, end, **kwargs):
     else:
         logger.info('GoogleScores already collected')
 
+    msg_date = None
+    msg_value = None
     needs_calculating = list(days_missing_model_score(model, start, end))
     if needs_calculating:
         calculate_start = min(needs_calculating)
@@ -231,7 +250,12 @@ def run(model, start, end, **kwargs):
 
         for ms in calculate_model_scores(model, calculate_start, calculate_end):
             db.session.add(ms)
+            msg_date = ms.day
+            msg_value = ms.value
     else:
         logger.info('ModelScores already calculated')
 
     db.session.commit()
+    if msg_date is not None and msg_value is not None:
+        send_score_to_message_queue(msg_date, msg_value)
+        logger.info('Last ModelScore value sent to message queue')

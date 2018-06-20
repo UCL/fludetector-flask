@@ -1,12 +1,12 @@
 from datetime import timedelta
-
+from dateutil.relativedelta import relativedelta
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import Form, DateField, SelectField, StringField, IntegerField, FieldList, ValidationError, BooleanField, TextAreaField
 from wtforms.validators import InputRequired, DataRequired, NumberRange
 from sqlalchemy.orm.exc import NoResultFound
 
-from fludetector.models import db, Model, REGIONS, GoogleTerm, TwitterNgram
+from fludetector.models import Model, REGIONS, GoogleTerm, TwitterNgram
 
 
 class ModelRegionField(StringField):
@@ -148,10 +148,10 @@ class GetScoresWebForm(GetScoresForm):
         super(GetScoresWebForm, self).__init__(*args, **kwargs)
         if self.model_regions.data and not self.start.data:
             start = self.model_regions.data[0][0].last_score.day
-            start = start - timedelta(days=7)
+            start = start - relativedelta(months=1)
             self.start.process_data(start)
         if self.start.data and not self.end.data:
-            end = self.start.data + timedelta(days=14)
+            end = self.model_regions.data[0][0].last_score.day
             self.end.process_data(end)
 
     def scores(self):
@@ -226,12 +226,10 @@ class CreateGoogleModelForm(CreateModelForm):
     matlab_function = StringField(
         'Matlab Function',
         description='The Matlab function to run over the raw Google data',
-        default='infer_ILI_rate_google_v4',
         validators=[InputRequired()])
     average_window_size = IntegerField(
         'Average Window Size',
         description="Before passing data to Matlab, the points can be averaged over a number of days. How many days should this model average data over? 1 means no averaging, 2 means average today's and yesterday's scores, etc. etc.",
-        default=1,
         validators=[InputRequired(), NumberRange(min=1)])
     google_terms = TermsListField(
         'Search Terms',

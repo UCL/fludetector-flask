@@ -15,6 +15,9 @@ $(function () {
             legend: {position: 'right'},
             hAxis: {
                 showTextEvery: 1
+            },
+            vAxis: {
+                minValue: 0
             }
         }
 

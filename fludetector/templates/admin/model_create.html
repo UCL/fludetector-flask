@@ -5,7 +5,11 @@
 {% block breadcrumbs %}
     <li><a href="{{ url_for('admin_home') }}">Home</a></li>
     <li><a href="{{ url_for('admin_list_models') }}">Models</a></li>
-    <li class="active">Create Model</li>
+    {% if model %}
+        <li class="active">Edit Model</li>
+    {% else %}
+        <li class="active">Create Model</li>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -40,14 +44,22 @@
 
             <div class="form-group {% if form.matlab_function.errors %}has-error{% endif %}">
                 {{ form.matlab_function.label(class_='control-label') }}
-                {{ form.matlab_function(class_='form-control') }}
+                {% if model %}
+                    {{ form.matlab_function(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.matlab_function(class_='form-control') }}
+                {% endif %}
                 <p class="help-block">{{ form.matlab_function.description }}</p>
                 {% for e in form.matlab_function.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
             </div>
 
             <div class="form-group {% if form.average_window_size.errors %}has-error{% endif %}">
                 {{ form.average_window_size.label(class_='control-label') }}
-                {{ form.average_window_size(class_='form-control') }}
+                {% if model %}
+                    {{ form.average_window_size(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.average_window_size(class_='form-control') }}
+                {% endif %}
                 <p class="help-block">{{ form.average_window_size.description }}</p>
                 {% for e in form.average_window_size.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
             </div>
@@ -60,7 +72,11 @@
                 {{ form.google_terms.label(class_='control-label') }}
                 <p class="help-block">{{ form.google_terms.description }}</p>
                 {% for e in form.google_terms.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
-                {{ form.google_terms(class_='form-control') }}
+                {% if model %}
+                    {{ form.google_terms(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.google_terms(class_='form-control') }}
+                {% endif %}
             </div>
 
         {% elif form.type.data == 'twitter' %}
@@ -69,35 +85,55 @@
                 {{ form.ngrams_e.label(class_='control-label') }}
                 <p class="help-block">{{ form.ngrams_e.description }}</p>
                 {% for e in form.ngrams_e.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
-                {{ form.ngrams_e(class_='form-control') }}
+                {% if model %}
+                    {{ form.ngrams_e(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.ngrams_e(class_='form-control') }}
+                {% endif %}
             </div>
 
             <div class="form-group {% if form.ngrams_l.errors %}has-error{% endif %}">
                 {{ form.ngrams_l.label(class_='control-label') }}
                 <p class="help-block">{{ form.ngrams_l.description }}</p>
                 {% for e in form.ngrams_l.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
-                {{ form.ngrams_l(class_='form-control') }}
+                {% if model %}
+                    {{ form.ngrams_l(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.ngrams_l(class_='form-control') }}
+                {% endif %}
             </div>
 
             <div class="form-group {% if form.ngrams_m.errors %}has-error{% endif %}">
                 {{ form.ngrams_m.label(class_='control-label') }}
                 <p class="help-block">{{ form.ngrams_m.description }}</p>
                 {% for e in form.ngrams_m.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
-                {{ form.ngrams_m(class_='form-control') }}
+                {% if model %}
+                    {{ form.ngrams_m(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.ngrams_m(class_='form-control') }}
+                {% endif %}
             </div>
 
             <div class="form-group {% if form.ngrams_n.errors %}has-error{% endif %}">
                 {{ form.ngrams_n.label(class_='control-label') }}
                 <p class="help-block">{{ form.ngrams_n.description }}</p>
                 {% for e in form.ngrams_n.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
-                {{ form.ngrams_n(class_='form-control') }}
+                {% if model %}
+                    {{ form.ngrams_n(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.ngrams_n(class_='form-control') }}
+                {% endif %}
             </div>
 
             <div class="form-group {% if form.ngrams_s.errors %}has-error{% endif %}">
                 {{ form.ngrams_s.label(class_='control-label') }}
                 <p class="help-block">{{ form.ngrams_s.description }}</p>
                 {% for e in form.ngrams_s.errors %}<p class="help-block">{{ e }}</p>{% endfor %}
-                {{ form.ngrams_s(class_='form-control') }}
+                {% if model %}
+                    {{ form.ngrams_s(readonly=true, class_='form-control') }}
+                {% else %}
+                    {{ form.ngrams_s(class_='form-control') }}
+                {% endif %}
             </div>
 
         {% endif %}
