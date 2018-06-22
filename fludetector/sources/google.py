@@ -276,4 +276,4 @@ def run(model, start, end, **kwargs):
     db.session.commit()
     if msg_date is not None and msg_value is not None:
         send_score_to_message_queue(msg_date, msg_value)
-        logger.info('Last ModelScore value sent to message queue')
+        logger.info('Latest ModelScore value sent to message queue')
