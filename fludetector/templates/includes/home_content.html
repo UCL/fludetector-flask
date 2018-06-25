@@ -115,7 +115,7 @@
 </div></div>
 <script>
     window.CHART_DATA = [
-        ['Date'{% for m, r in form.model_regions.data %}, "{{ m.name | safe }}/{{ regions[r] }}"{% endfor %}],
+        [{label: 'Date', type: 'date'}{% for m, r in form.model_regions.data %}, {label: "{{ m.name | safe }}/{{ regions[r] }}", type: 'string'}{% endfor %}],
         {% for day, models in raw_scores.iteritems() | sort %}
             [new Date('{{ day.strftime('%Y-%m-%d') }}'){% for m, r in form.model_regions.data %}, {{ models[m][r] or 'null' }}{% endfor %}],
         {% endfor %}
