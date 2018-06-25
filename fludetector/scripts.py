@@ -45,7 +45,7 @@ def runmodel(model_id, start, end, csv):
         else:
             end = date.today() - timedelta(days=2)
 
-        if start >= end:
+        if start > end:
             raise click.ClickException('Start must be before end')
         if end >= date.today():
             raise click.ClickException('End must be in the past')

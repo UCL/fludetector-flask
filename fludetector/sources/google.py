@@ -15,6 +15,8 @@ from stompest.protocol import StompSpec
 from fludetector.log import logger
 from fludetector.models import db, GoogleScore, ModelScore, GoogleLog
 
+from fludetector.matlabhandle import buildMatlab, MatlabType
+
 
 def get_google_score(term, day):
     try:
@@ -119,25 +121,41 @@ def get_model_score(model, day):
     return ms
 
 
-def calculate_score(model, day):
+def calculate_score(model, day, matlab_runner):
     averages = list(calculate_moving_averages(model, day))
     if not averages:
         return
     ms = get_model_score(model, day)
     try:
-        ms.value = send_to_matlab(model, averages)
+        if matlab_runner.conf is MatlabType.LEGACY:
+            ms.value = send_to_matlab(model, averages)
+        elif matlab_runner.conf is MatlabType.LOCAL:
+            ms.value = matlab_runner.calculateModelScore(model, averages)
     except ErrorReturnCode as e:
         logger.exception(e)
         raise e
     return ms
 
 
+def get_matlab_conf():
+    try:
+        host = os.environ['MATLAB_HOST']
+        if host == 'fmedia13':
+            conf = MatlabType.LEGACY
+        else:
+            conf = MatlabType.REMOTE
+    except KeyError as e:
+        conf = MatlabType.LOCAL
+    return conf
+
+
 def calculate_model_scores(model, start, end):
     logger.info('Calculating new ModelScores between %s and %s' % (start, end))
     days_apart = (end - start).days + 1
+    matlab_runner = buildMatlab(get_matlab_conf())
     days = (start + timedelta(days=d) for d in xrange(days_apart))
     for day in days:
-        s = calculate_score(model, day)
+        s = calculate_score(model, day, matlab_runner)
         if s:
             yield s
 
@@ -196,7 +214,7 @@ def run_batch(batch, start, end):
 def send_score_to_message_queue(date, score):
     client = Stomp(StompConfig('tcp://fmapiclient.cs.ucl.ac.uk:7672', version=StompSpec.VERSION_1_0))
     client.connect(headers={'passcode': 'admin', 'login': 'admin'})
-    message = 'date={0}\nvalue={1}'.format(date. str(score))
+    message = 'date={0}\nvalue={1}'.format(date, str(score))
     client.send('/queue/PubModelScore.Q', body=message)
     client.disconnect()
 
@@ -258,4 +276,4 @@ def run(model, start, end, **kwargs):
     db.session.commit()
     if msg_date is not None and msg_value is not None:
         send_score_to_message_queue(msg_date, msg_value)
-        logger.info('Last ModelScore value sent to message queue')
+        logger.info('Latest ModelScore value sent to message queue')
