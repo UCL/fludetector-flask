@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 
 from sqlalchemy.orm.exc import NoResultFound
-from apiclient.discovery import build
+from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from sh import ssh, scp, ErrorReturnCode
 

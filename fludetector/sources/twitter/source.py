@@ -1,18 +1,12 @@
-import shutil
-import tempfile
-import time
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from sqlalchemy.orm.exc import NoResultFound
-from apiclient.discovery import build
-from googleapiclient.errors import HttpError
 import sh
-from sh import cat, lzop, ssh, scp, ErrorReturnCode
+from sh import cat, lzop, ssh, scp
 
 from fludetector.errors import FluDetectorError
 from fludetector.log import logger
-from fludetector.models import db, GoogleScore, ModelScore
+from fludetector.models import db
 
 SINGLE_DAY_COMBINED_PATH = '/tmp/fludetector_twitter_single_day_combined'
 SINGLE_DAY_PATH = '/tmp/fludetector_twitter_single_day'
