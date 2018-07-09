@@ -4,14 +4,19 @@ from functools import wraps
 from collections import defaultdict
 from datetime import timedelta
 from StringIO import StringIO
+import atexit
 
 import sh
 from flask import Flask, request, jsonify, render_template, make_response, Response, abort, redirect, url_for, flash
 from flask_dotenv import DotEnv
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from fludetector import models, scripts, forms
 from fludetector.errors import FluDetectorError
 from fludetector.models import db, get_region, REGIONS, Model, ModelScore, GoogleScore
+
+from scripts import runmodel
 
 app = Flask(__name__)
 env = DotEnv(app)
@@ -20,6 +25,19 @@ os.environ['GOOGLE_API_KEY'] = app.config['GOOGLE_API_KEY']
 
 models.init_app(app)
 scripts.init_app(app)
+
+cron_hr = app.config.get('GOOGLE_API_CRON_HOUR', 14)
+cron_min = app.config.get('GOOGLE_API_CRON_MINUTE', 30)
+model_id = app.config.get('RUN_MODEL_ID', 1)
+sched = BackgroundScheduler(daemon=True)
+with app.app_context():
+    sched.add_job(runmodel(model_id=model_id, start=None, end=None, csv=None), 'cron', hour=cron_hr, minute=cron_min)
+    sched.start()
+
+
+@atexit.register
+def shutdown_scheduler():
+    sched.shutdown(wait=False)
 
 
 @app.errorhandler(FluDetectorError)
