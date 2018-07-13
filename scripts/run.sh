@@ -12,4 +12,4 @@ set -e
 
 export FLASK_APP=./fludetector/app.py
 
-flask runmodel $@
+flask "$@"
