@@ -1,6 +1,7 @@
 import tempfile
 import time
 import os
+import logging
 from datetime import datetime, timedelta
 
 from sqlalchemy.orm.exc import NoResultFound
@@ -29,13 +30,15 @@ def get_google_score(term, day):
 
 
 def collect_google_scores(terms, start, end):
+    logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
     logger.info('Querying %d terms between %s and %s' % (len(terms), start, end))
     logger.debug(', '.join(t.term for t in terms))
     service = build(
         'trends',
         'v1beta',
         developerKey=os.environ["GOOGLE_API_KEY"],
-        discoveryServiceUrl='https://www.googleapis.com/discovery/v1/apis/trends/v1beta/rest'
+        discoveryServiceUrl='https://www.googleapis.com/discovery/v1/apis/trends/v1beta/rest',
+        cache_discovery=False
     )
     graph = service.getTimelinesForHealth(
         terms=[t.term for t in terms],
