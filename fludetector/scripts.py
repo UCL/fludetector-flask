@@ -95,4 +95,3 @@ def runmodelscheduler(model_id, crontab):
         kwargs={"model_id": model_id},
         trigger=CronTrigger.from_crontab(crontab))
     scheduler.start()
-

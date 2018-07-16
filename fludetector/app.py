@@ -80,6 +80,10 @@ def get_scores_form(public=True):
     return all_models, form
 
 
+def is_admin_enabled():
+    return app.config.get('ADMIN_ENABLED')
+
+
 @app.route('/')
 def home():
     all_models, form = get_scores_form()
@@ -91,7 +95,9 @@ def home():
         form=form,
         regions=REGIONS,
         averages=calculate_averages(scores),
-        raw_scores=calculate_raw_scores(scores))
+        raw_scores=calculate_raw_scores(scores),
+        admin_enabled=is_admin_enabled()
+    )
 
 
 @app.route('/export/')

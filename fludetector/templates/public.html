@@ -9,7 +9,9 @@
 
 
 {% block admin_link %}
+  {% if admin_enabled %}
   <a href="{{ url_for('admin_home') }}">
     <span class="glyphicon glyphicon-log-in"></span> Admin
   </a>
+  {% endif %}
 {% endblock %}
