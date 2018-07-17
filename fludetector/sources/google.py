@@ -271,8 +271,9 @@ def run(model, start, end, **kwargs):
 
         for ms in calculate_model_scores(model, calculate_start, calculate_end):
             db.session.add(ms)
-            msg_date = ms.day
-            msg_value = ms.value
+            if os.environ['TWITTER_ENABLED'] == 'True':
+                msg_date = ms.day
+                msg_value = ms.value
     else:
         logger.info('ModelScores already calculated')
 
