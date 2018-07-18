@@ -93,5 +93,6 @@ def runmodelscheduler(model_id, crontab):
     scheduler.add_job(
         func=runmodel_func,
         kwargs={"model_id": model_id},
-        trigger=CronTrigger.from_crontab(crontab))
+        trigger=CronTrigger.from_crontab(crontab),
+        misfire_grace_time=3600)
     scheduler.start()
