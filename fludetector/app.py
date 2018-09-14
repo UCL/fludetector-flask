@@ -17,6 +17,7 @@ app = Flask(__name__)
 env = DotEnv(app)
 
 os.environ['GOOGLE_API_KEY'] = app.config['GOOGLE_API_KEY']
+os.environ['MODEL_ENGINE'] = app.config['MODEL_ENGINE']
 os.environ['TWITTER_ENABLED'] = app.config.get('TWITTER_ENABLED', 'False')
 
 models.init_app(app)

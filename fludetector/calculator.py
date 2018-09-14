@@ -51,6 +51,7 @@ class LocalOctave(object):
         self.conf = CalculatorType.OCTAVE
         from oct2py import octave
         self.engine = octave
+        self.engine.cd("octave")
         self.engine.run("gpml/startup.m")
 
     def calculateModelScore(self, model, averages):
@@ -58,7 +59,7 @@ class LocalOctave(object):
         fhout = tempfile.NamedTemporaryFile(prefix='fludetector-matlab-output.')
         fhin.write('\n'.join('%s,%f' % a for a in averages))
         fhin.flush()
-        self.engine.run("%s(%s,%s)" % (model.get_data()['matlab_function'], fhin.name, fhout.name))
+        self.engine.eval("%s('%s','%s')" % (model.get_data()['matlab_function'], fhin.name, fhout.name))
         value = float(open(fhout.name).read().strip())
         fhin.close()
         fhout.close()

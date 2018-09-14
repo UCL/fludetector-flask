@@ -142,7 +142,7 @@ def calculate_score(model, day, engine_runner):
 
 def get_engine_conf():
     try:
-        engine_type = os.environ('MODEL_ENGINE')
+        engine_type = os.environ["MODEL_ENGINE"]
         if engine_type == 'matlab':
             conf = CalculatorType.MATLAB
         elif engine_type == 'octave':

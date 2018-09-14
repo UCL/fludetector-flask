@@ -16,6 +16,7 @@ Jinja2==2.10
 logzero==1.5.0
 Mako==1.0.7
 MarkupSafe==1.0
+numpy==1.15.1
 oct2py==4.0.6
 oauth2client==4.1.2
 pyasn1==0.4.3
@@ -24,6 +25,7 @@ python-dateutil==2.7.3
 python-editor==1.0.3
 pytz==2018.4
 rsa==3.4.2
+scipy==1.1.0
 sh==1.12.14
 six==1.11.0
 SQLAlchemy==1.2.8
