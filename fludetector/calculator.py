@@ -1,5 +1,4 @@
 from enum import Enum
-import matlab.engine
 import tempfile
 
 
@@ -19,6 +18,7 @@ class CalculatorType(Enum):
 class LocalMatlab(object):
 
     def __init__(self):
+        import matlab.engine
         self.conf = CalculatorType.MATLAB
         self.engine = matlab.engine.start_matlab("-nodisplay -nojvm")
         self.engine.cd("matlab")
