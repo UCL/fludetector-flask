@@ -16,6 +16,7 @@ Jinja2==2.10
 logzero==1.5.0
 Mako==1.0.7
 MarkupSafe==1.0
+oct2py==4.0.6
 oauth2client==4.1.2
 pyasn1==0.4.3
 pyasn1-modules==0.2.1
