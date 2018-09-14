@@ -16,7 +16,7 @@ from stompest.protocol import StompSpec
 from fludetector.log import logger
 from fludetector.models import db, GoogleScore, ModelScore, GoogleLog
 
-from fludetector.matlabhandle import buildMatlab, MatlabType
+from fludetector.calculator import buildCalculator, CalculatorType
 
 
 def get_google_score(term, day):
@@ -124,41 +124,45 @@ def get_model_score(model, day):
     return ms
 
 
-def calculate_score(model, day, matlab_runner):
+def calculate_score(model, day, engine_runner):
     averages = list(calculate_moving_averages(model, day))
     if not averages:
         return
     ms = get_model_score(model, day)
     try:
-        if matlab_runner.conf is MatlabType.LEGACY:
+        if engine_runner.conf is CalculatorType.LEGACY:
             ms.value = send_to_matlab(model, averages)
-        elif matlab_runner.conf is MatlabType.LOCAL:
-            ms.value = matlab_runner.calculateModelScore(model, averages)
+        else:
+            ms.value = engine_runner.calculateModelScore(model, averages)
     except ErrorReturnCode as e:
         logger.exception(e)
         raise e
     return ms
 
 
-def get_matlab_conf():
+def get_engine_conf():
     try:
-        host = os.environ['MATLAB_HOST']
-        if host == 'fmedia13':
-            conf = MatlabType.LEGACY
+        engine_type = os.environ('MODEL_ENGINE')
+        if engine_type == 'matlab':
+            conf = CalculatorType.MATLAB
+        elif engine_type == 'octave':
+            conf = CalculatorType.OCTAVE
+        elif engine_type == 'remote':
+            conf = CalculatorType.REMOTE
         else:
-            conf = MatlabType.REMOTE
+            conf = CalculatorType.LEGACY
     except KeyError as e:
-        conf = MatlabType.LOCAL
+        conf = CalculatorType.LEGACY
     return conf
 
 
 def calculate_model_scores(model, start, end):
     logger.info('Calculating new ModelScores between %s and %s' % (start, end))
     days_apart = (end - start).days + 1
-    matlab_runner = buildMatlab(get_matlab_conf())
+    engine_runner = buildCalculator(get_engine_conf())
     days = (start + timedelta(days=d) for d in xrange(days_apart))
     for day in days:
-        s = calculate_score(model, day, matlab_runner)
+        s = calculate_score(model, day, engine_runner)
         if s:
             yield s
 
@@ -267,7 +271,7 @@ def run(model, start, end, **kwargs):
         calculate_end = max(needs_calculating)
 
         td = timedelta(seconds=(calculate_end - calculate_start).days * 8)  # Assuming 8 seconds to process each day
-        logger.info('To process all days in Matlab will take roughly %s' % str(td))
+        logger.info('To process all days in Matlab/Octave will take roughly %s' % str(td))
 
         for ms in calculate_model_scores(model, calculate_start, calculate_end):
             db.session.add(ms)
