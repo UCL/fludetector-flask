@@ -268,7 +268,7 @@ def admin_run_model(id):
     form = forms.RunModelForm.factory(model)
     if form.validate_on_submit():
         run = sh.Command('./scripts/run.sh')
-        run(str(id), _bg=True, **form.to_dict())
+        run('runmodel', str(id), _bg=True, **form.to_dict())
         flash('Model running in background, check logs for details', 'info')
         return redirect(url_for('admin_list_models'))
     return render_template('admin/model_run.html', form=form, model=model)
