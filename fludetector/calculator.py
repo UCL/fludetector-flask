@@ -8,6 +8,10 @@ def buildCalculator(calculatorType):
     if calculatorType is CalculatorType.REMOTE:
         return RemoteCalculator()
     if calculatorType is CalculatorType.OCTAVE:
+        global octave
+        from oct2py import octave
+        octave.cd("octave")
+        octave.run("gpml/startup.m")
         return LocalOctave()
 
 
@@ -49,17 +53,13 @@ class LocalOctave(object):
 
     def __init__(self):
         self.conf = CalculatorType.OCTAVE
-        from oct2py import octave
-        self.engine = octave
-        self.engine.cd("octave")
-        self.engine.run("gpml/startup.m")
 
     def calculateModelScore(self, model, averages):
         fhin = tempfile.NamedTemporaryFile(prefix='fludetector-matlab-input.')
         fhout = tempfile.NamedTemporaryFile(prefix='fludetector-matlab-output.')
         fhin.write('\n'.join('%s,%f' % a for a in averages))
         fhin.flush()
-        self.engine.eval("%s('%s','%s')" % (model.get_data()['matlab_function'], fhin.name, fhout.name))
+        octave.eval("%s('%s','%s')" % (model.get_data()['matlab_function'], fhin.name, fhout.name))
         value = float(open(fhout.name).read().strip())
         fhin.close()
         fhout.close()
