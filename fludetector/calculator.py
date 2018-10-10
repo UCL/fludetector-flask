@@ -8,10 +8,12 @@ def buildCalculator(calculatorType):
     if calculatorType is CalculatorType.REMOTE:
         return RemoteCalculator()
     if calculatorType is CalculatorType.OCTAVE:
-        global octave
-        from oct2py import octave
-        octave.cd("octave")
-        octave.run("gpml/startup.m")
+        import sys
+        if 'oct2py' not in sys.modules:
+            global octave
+            from oct2py import octave
+            octave.cd("octave")
+            octave.run("gpml/startup.m")
         return LocalOctave()
 
 
