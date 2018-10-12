@@ -25,6 +25,6 @@ $(function () {
         chart.draw(data, options);
     }
 
-    google.charts.load('current', {'packages': ['corechart']});
+    google.charts.load('45', {'packages': ['corechart']});
     google.charts.setOnLoadCallback(drawGraph);
 });
