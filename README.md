@@ -109,10 +109,6 @@ changes, then update to deploy them.
 [ ] Fix the update script so that the deploy user can restart the supervisor process for fludetector
 
 
-## List of WTFs!
-
-Recorded here for sanity.
-
 ### Listing models and regions
 
 The home page has a list of the models and the regions that you can query over,
@@ -130,3 +126,15 @@ tricky.
 
 Hence the WTF in `home.html` where we use this hack: https://stackoverflow.com/questions/7537439/how-to-increment-a-variable-on-a-for-loop-in-jinja-template/32700975#32700975
 to build a counter.
+
+## Reporting bugs
+
+Please use the GitHub issue tracker for any bugs or feature suggestions:
+
+<https://github.com/UCL/fludetector-flask/issues>
+
+## Copyright
+
+Fludetector is licensed under the GNU General Public License, v3. A copy of this license is included in the file [LICENSE.md](LICENSE.md).
+
+&copy; 2019 UCL ([https://www.ucl.ac.uk](https://www.ucl.ac.uk)).
