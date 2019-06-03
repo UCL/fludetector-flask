@@ -2,8 +2,16 @@
 
 Fludetector was designed and developed by:
 
-- Jens Geyti
 - Vasileios Lampos
+- William Mayor
+- David Guzman
+
+Fludetector is based on research by:
+
+- Vasileios Lampos
+- Ingemar J Cox
+- Bin Zou
+- Andrew Miller
 
 ### Current Team
 
