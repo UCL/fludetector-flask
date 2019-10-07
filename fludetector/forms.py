@@ -39,7 +39,7 @@ class ModelRegionField(StringField):
 
     def process_formdata(self, valuelist):
         super(ModelRegionField, self).process_formdata(valuelist)
-        model_id, region = self.data.data.split('-')
+        model_id, region = self.data.split('-')
         self.data = (None, None)  # So that data is always a tuple, even if processing fails
         if region not in REGIONS:
             raise ValueError('No region with code %s' % region)
