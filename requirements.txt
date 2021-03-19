@@ -12,7 +12,7 @@ google-api-python-client==1.7.3
 gunicorn==19.8.1
 httplib2==0.11.3
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 logzero==1.5.0
 Mako==1.0.7
 MarkupSafe==1.0
