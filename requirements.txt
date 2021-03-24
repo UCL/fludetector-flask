@@ -24,7 +24,7 @@ pyasn1-modules==0.2.1
 python-dateutil==2.7.3
 python-editor==1.0.3
 pytz==2018.4
-rsa==3.4.2
+rsa==4.1
 scipy==1.1.0
 sh==1.12.14
 six==1.11.0
