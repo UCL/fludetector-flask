@@ -14,7 +14,7 @@ httplib2==0.11.3
 itsdangerous==0.24
 Jinja2==2.10
 logzero==1.5.0
-Mako==1.0.7
+Mako==1.2.2
 MarkupSafe==1.0
 numpy==1.15.1
 oct2py==4.0.6
